@@ -18,6 +18,7 @@ import Head from "next/head";
 import Image from "next/image";
 import { useState, type ChangeEvent, type FormEvent } from "react";
 import { api } from "~/utils/api";
+import { useUser } from "@clerk/nextjs";
 
 interface TweetProps {
   tweet: {
@@ -81,6 +82,7 @@ const CreateTweet = () => {
 
   const handleSubmitTweet = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    if (tweetText.trim() === "") return;
     // Handle submitting tweet logic here
     console.log("Tweet submitted:", tweetText);
     // setTweetText('');
@@ -102,7 +104,6 @@ const CreateTweet = () => {
           className="w-full resize-none bg-transparent outline-none"
           rows={3}
           placeholder="What's happening?"
-          value={"new tweet"}
           onChange={handleInputChange}
         />
         <div className="mt-2 flex items-center justify-between">
@@ -174,7 +175,7 @@ const Tweet: React.FC<TweetProps> = ({
           <span className="text-gray-500">2h</span>
         </div>
         <div>{body}</div>
-        <div className="mt-4 flex w-full items-center justify-between gap-5">
+        <div className="mt-4 flex items-center justify-between gap-5">
           <button
             title="Comment"
             className="text-gray-500 hover:text-blue-500 focus:outline-none"
@@ -214,6 +215,9 @@ const Tweet: React.FC<TweetProps> = ({
 
 const Home: NextPage = () => {
   const hello = api.example.hello.useQuery({ text: "from tRPC" });
+  const user = useUser();
+
+  console.log(user);
 
   return (
     <>
@@ -223,6 +227,7 @@ const Home: NextPage = () => {
       </Head>
       <main className="flex min-h-screen flex-col items-center justify-center gap-3 bg-gray-100">
         <div className="container mx-auto flex flex-col gap-5 p-4">
+          {!!user && user.user?.username}
           <CreateTweet />
 
           {tweets.map((tweet) => (
