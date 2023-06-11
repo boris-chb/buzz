@@ -15,6 +15,12 @@ const config = {
         port: "",
         pathname: "/sticky/**",
       },
+      {
+        protocol: "https",
+        hostname: "images.clerk.dev",
+        port: "",
+        pathname: "/**",
+      },
     ],
   },
 
