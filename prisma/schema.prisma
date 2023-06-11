@@ -11,8 +11,14 @@ datasource db {
   relationMode = "prisma"
 }
 
-model Example {
+model Tweet {
     id        String   @id @default(cuid())
     createdAt DateTime @default(now())
-    updatedAt DateTime @updatedAt
+
+    body String @db.VarChar(255)
+    authorId String
+    likes Int @default(0)
+    retweets Int @default(0)
+
+    @@index([authorId])
 }

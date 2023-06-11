@@ -22,10 +22,7 @@ import { useUser } from "@clerk/nextjs";
 
 interface TweetProps {
   tweet: {
-    author: {
-      name: string;
-      handle: string;
-    };
+    authorId: string;
     body: string;
     createdAt: Date;
     likes: number;
@@ -36,10 +33,7 @@ interface TweetProps {
 const tweets = [
   {
     id: 1,
-    author: {
-      name: "John Doe",
-      handle: "johndoe",
-    },
+    authorId: "1",
     createdAt: new Date("2022-01-01T12:00:00Z"),
     body: "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
     likes: 42,
@@ -154,7 +148,7 @@ const CreateTweet = () => {
 };
 
 const Tweet: React.FC<TweetProps> = ({
-  tweet: { author, body, createdAt, likes, retweets },
+  tweet: { authorId, body, createdAt, likes, retweets },
 }) => {
   return (
     <div className="flex border-b border-gray-200 p-4">
@@ -167,9 +161,9 @@ const Tweet: React.FC<TweetProps> = ({
       />
       <div className="flex-grow">
         <div className="flex items-center">
-          <span className="mr-2 font-bold">{author.name}</span>
+          <span className="mr-2 font-bold">{"Hard Coded"}</span>
           <span className="text-gray-500">
-            @<span>{author.handle}</span>
+            @<span>{"hardcoded"}</span>
           </span>
           <span className="mx-2 text-gray-500">•</span>
           <span className="text-gray-500">2h</span>
@@ -214,10 +208,8 @@ const Tweet: React.FC<TweetProps> = ({
 };
 
 const Home: NextPage = () => {
-  const hello = api.example.hello.useQuery({ text: "from tRPC" });
+  const { data: tweets } = api.tweets.getAll.useQuery();
   const user = useUser();
-
-  console.log(user);
 
   return (
     <>
@@ -230,7 +222,7 @@ const Home: NextPage = () => {
           {!!user && user.user?.username}
           <CreateTweet />
 
-          {tweets.map((tweet) => (
+          {tweets?.map((tweet) => (
             <Tweet key={tweet.id} tweet={tweet} />
           ))}
         </div>
