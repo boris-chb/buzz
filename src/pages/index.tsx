@@ -150,7 +150,7 @@ const Tweet: React.FC<TweetWithAuthor> = ({
     }`;
   };
   return (
-    <div className="flex border border-slate-200 p-4">
+    <div className="flex rounded-lg border border-slate-200 p-4">
       <Image
         className="mr-4 h-12 w-12 rounded-full"
         src={author.profileImageUrl}
@@ -173,15 +173,17 @@ const Tweet: React.FC<TweetWithAuthor> = ({
             title="Comment"
             className="text-gray-500 hover:text-blue-500 focus:outline-none"
           >
-            <div className="flex"></div>
-            <ChatBubbleOvalLeftEllipsisIcon className="mr-1 h-5 w-5" />
+            <div className="flex items-center justify-center gap-2">
+              <ChatBubbleOvalLeftEllipsisIcon className=" h-5 w-5" />
+              {10}
+            </div>
           </button>
           <button
             title="Retweet"
             className="text-gray-500 hover:text-green-500 focus:outline-none"
           >
-            <div className="flex">
-              <ArrowUpTrayIcon className="mr-1 h-5 w-5" />
+            <div className="flex items-center justify-center gap-2">
+              <ArrowUpTrayIcon className=" h-5 w-5" />
               {retweets}
             </div>
           </button>
@@ -189,8 +191,8 @@ const Tweet: React.FC<TweetWithAuthor> = ({
             title="Likes"
             className="text-gray-500 hover:text-red-500 focus:outline-none"
           >
-            <div className="flex">
-              <HeartIcon className="mr-1 h-5 w-5" />
+            <div className="flex items-center justify-center gap-2">
+              <HeartIcon className=" h-5 w-5" />
               {likes}
             </div>
           </button>
