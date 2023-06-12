@@ -24,6 +24,7 @@ import { useUser } from "@clerk/nextjs";
 
 import dayjs from "dayjs";
 import relativeTime from "dayjs/plugin/relativeTime";
+import TweetLoadingSkeleton from "~/components/ui/TweetLoading";
 
 dayjs.extend(relativeTime);
 
@@ -140,6 +141,7 @@ const CreateTweet: React.FC = () => {
 };
 
 type TweetWithAuthor = RouterOutputs["tweets"]["getAll"][number];
+
 const Tweet: React.FC<TweetWithAuthor> = ({
   tweet: { body, createdAt, likes, retweets },
   author,
@@ -149,6 +151,7 @@ const Tweet: React.FC<TweetWithAuthor> = ({
       user?.lastName ? user?.lastName : ""
     }`;
   };
+
   return (
     <div className="flex rounded-lg border border-slate-200 p-4">
       <Image
@@ -167,7 +170,7 @@ const Tweet: React.FC<TweetWithAuthor> = ({
           <span className="mx-2 text-gray-500">•</span>
           <span className="text-gray-500">{dayjs(createdAt).fromNow()}</span>
         </div>
-        <div>{body}</div>
+        <div className="text-xl">{body}</div>
         <div className="mt-4 flex items-center justify-between gap-5">
           <button
             title="Comment"
@@ -208,8 +211,24 @@ const Tweet: React.FC<TweetWithAuthor> = ({
   );
 };
 
+const Feed: React.FC = () => {
+  const { data: tweets, isLoading: tweetsLoading } =
+    api.tweets.getAll.useQuery();
+
+  return (
+    <>
+      {tweetsLoading ? (
+        <TweetLoadingSkeleton count={4} />
+      ) : (
+        tweets?.map(({ tweet, author }) => (
+          <Tweet key={tweet.id} tweet={tweet} author={author} />
+        ))
+      )}
+    </>
+  );
+};
+
 const Home: NextPage = () => {
-  const { data: tweets } = api.tweets.getAll.useQuery();
   const user = useUser();
 
   return (
@@ -220,12 +239,8 @@ const Home: NextPage = () => {
       </Head>
       <main className="flex min-h-screen flex-col items-center justify-start gap-3 border border-red-500">
         <div className="mx-auto flex h-screen w-full flex-col gap-5 border border-sky-500 p-4 md:max-w-2xl">
-          {!!user && <div className="flex">{user.user?.username}</div>}
           <CreateTweet />
-
-          {tweets?.map(({ tweet, author }) => (
-            <Tweet key={tweet.id} tweet={tweet} author={author} />
-          ))}
+          <Feed />
         </div>
       </main>
     </>
