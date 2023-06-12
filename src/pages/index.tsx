@@ -31,13 +31,16 @@ dayjs.extend(relativeTime);
 const CreateTweet: React.FC = () => {
   const [tweetText, setTweetText] = useState("");
 
+  const ctx = api.useContext();
+
+  const { mutate, isLoading: isTweeting } = api.tweets.create.useMutation({
+    onSuccess: async () => {
+      setTweetText("");
+      await ctx.tweets.getAll.invalidate();
+    },
+  });
+
   const { user } = useUser();
-
-  console.log(user?.id);
-
-  const handleInputChange = (e: ChangeEvent<HTMLTextAreaElement>) => {
-    setTweetText(e.target.value);
-  };
 
   const handleAttachMedia = () => {
     // Handle attaching media logic here
@@ -67,9 +70,11 @@ const CreateTweet: React.FC = () => {
   const handleSubmitTweet = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (tweetText.trim() === "") return;
-    // Handle submitting tweet logic here
-    console.log("Tweet submitted:", tweetText);
-    // setTweetText('');
+    try {
+      mutate({ body: tweetText });
+    } catch (error) {
+      console.error(error);
+    }
   };
 
   return (
@@ -85,16 +90,18 @@ const CreateTweet: React.FC = () => {
         width={400}
         height={400}
       />
-      <form className="flex-grow" onSubmit={handleSubmitTweet}>
+      <form className="mt-2 flex-grow" onSubmit={handleSubmitTweet}>
         <textarea
-          className="w-full resize-none bg-transparent outline-none"
+          className="w-full resize-none bg-transparent text-slate-700 outline-none disabled:cursor-not-allowed"
           rows={3}
           maxLength={255}
+          value={tweetText}
           placeholder="What's happening?"
-          onChange={handleInputChange}
+          onChange={(e) => setTweetText(e.target.value)}
+          disabled={isTweeting}
         />
-        <div className="mt-2 flex items-center justify-between border border-red-500 p-1">
-          <div className="mr-4 flex gap-4 border border-red-500">
+        <div className="mt-2 flex items-center justify-between  p-1">
+          <div className="mr-4 flex gap-4 ">
             <button
               title="Attach Media"
               type="button"
@@ -129,7 +136,8 @@ const CreateTweet: React.FC = () => {
           </div>
           <button
             type="submit"
-            className="rounded-3xl bg-blue-500  px-4 py-2 text-white hover:bg-blue-600 md:px-6 md:py-3 md:text-lg"
+            disabled={isTweeting}
+            className="rounded-3xl bg-blue-500 px-3  py-1 text-white hover:bg-blue-600 disabled:cursor-not-allowed disabled:bg-gray-300 md:px-4 md:py-2 md:text-lg"
           >
             Tweet
           </button>
@@ -153,7 +161,7 @@ const Tweet: React.FC<TweetWithAuthor> = ({
   };
 
   return (
-    <div className="flex rounded-lg border border-slate-200 p-4">
+    <div className="flex w-full rounded-lg border border-slate-200 p-4">
       <Image
         className="mr-4 h-12 w-12 rounded-full"
         src={author.profileImageUrl}
@@ -237,8 +245,8 @@ const Home: NextPage = () => {
         <title>Twitter Clone</title>
         <link rel="icon" href="/favicon.ico" />
       </Head>
-      <main className="flex min-h-screen flex-col items-center justify-start gap-3 border border-red-500">
-        <div className="mx-auto flex h-screen w-full flex-col gap-5 border border-sky-500 p-4 md:max-w-2xl">
+      <main className="flex min-h-screen flex-col items-center justify-start gap-3">
+        <div className="mx-auto flex h-screen w-full flex-col gap-5 border border-slate-400 p-4 md:max-w-2xl">
           <CreateTweet />
           <Feed />
         </div>
