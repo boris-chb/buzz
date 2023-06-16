@@ -12,6 +12,19 @@ import { Redis } from "@upstash/redis";
 
 const TWEET_LENGTH = 100;
 
+const createTweetInputSchema = z.object({
+  body: z
+    .string()
+    .min(1, { message: "Tweet cannot be empty!" })
+    .max(TWEET_LENGTH, {
+      message: `Tweet cannot be longer than ${TWEET_LENGTH} characters.`,
+    }),
+});
+
+const editTweetInputSchema = createTweetInputSchema
+  .pick({ body: true }) // Pick the 'body' field from createTweetInputSchema
+  .merge(z.object({ id: z.string() })); // Add the 'id' field
+
 const filterUserForClient = (user: User) => {
   return {
     id: user.id,
@@ -66,16 +79,7 @@ export const tweetRouter = createTRPCRouter({
   }),
 
   create: privateProcedure
-    .input(
-      z.object({
-        body: z
-          .string()
-          .min(1, { message: "Tweet cannot be empty!" })
-          .max(TWEET_LENGTH, {
-            message: `Tweet cannot be longer than ${TWEET_LENGTH} characters.`,
-          }),
-      })
-    )
+    .input(createTweetInputSchema)
     .mutation(async ({ ctx, input }) => {
       const authorId = ctx.currentUserId;
 
@@ -91,5 +95,17 @@ export const tweetRouter = createTRPCRouter({
       });
 
       return tweet;
+    }),
+
+  edit: privateProcedure
+    .input(editTweetInputSchema)
+    .mutation(async ({ ctx, input }) => {
+      const authorId = ctx.currentUserId;
+
+      const currentTweet = await ctx.prisma.tweet.findFirst({
+        where: { id: input.id },
+      });
+
+      // TODO
     }),
 });
