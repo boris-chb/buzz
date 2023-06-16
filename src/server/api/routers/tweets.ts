@@ -7,6 +7,10 @@ import {
   privateProcedure,
   publicProcedure,
 } from "~/server/api/trpc";
+import { Ratelimit } from "@upstash/ratelimit";
+import { Redis } from "@upstash/redis";
+
+const TWEET_LENGTH = 100;
 
 const filterUserForClient = (user: User) => {
   return {
@@ -17,6 +21,19 @@ const filterUserForClient = (user: User) => {
     lastName: user.lastName,
   };
 };
+
+// Create a new ratelimiter, that allows 10 requests per 10 seconds
+const ratelimit = new Ratelimit({
+  redis: Redis.fromEnv(),
+  limiter: Ratelimit.slidingWindow(1, "10 s"),
+  analytics: true,
+  /**
+   * Optional prefix for the keys used in redis. This is useful if you want to share a redis
+   * instance with other applications and want to avoid key collisions. The default prefix is
+   * "@upstash/ratelimit"
+   */
+  prefix: "@upstash/ratelimit",
+});
 
 export const tweetRouter = createTRPCRouter({
   getAll: publicProcedure.query(async ({ ctx }) => {
@@ -31,8 +48,6 @@ export const tweetRouter = createTRPCRouter({
         limit: 100,
       })
     ).map(filterUserForClient);
-
-    console.log(users);
 
     return tweets.map((tweet) => {
       const author = users.find((user) => user.id === tweet.authorId);
@@ -53,19 +68,28 @@ export const tweetRouter = createTRPCRouter({
   create: privateProcedure
     .input(
       z.object({
-        body: z.string().min(1).max(255),
+        body: z
+          .string()
+          .min(1, { message: "Tweet cannot be empty!" })
+          .max(TWEET_LENGTH, {
+            message: `Tweet cannot be longer than ${TWEET_LENGTH} characters.`,
+          }),
       })
     )
     .mutation(async ({ ctx, input }) => {
       const authorId = ctx.currentUserId;
 
-      const post = await ctx.prisma.tweet.create({
+      const { success } = await ratelimit.limit(authorId);
+
+      if (!success) throw new TRPCError({ code: "TOO_MANY_REQUESTS" });
+
+      const tweet = await ctx.prisma.tweet.create({
         data: {
           authorId,
           body: input.body,
         },
       });
 
-      return post;
+      return tweet;
     }),
 });
