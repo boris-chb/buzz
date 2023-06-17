@@ -5,3 +5,13 @@
 body {
   @apply bg-black text-slate-100;
 }
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.spin-animation {
+  animation: spin 0.5s;
+}

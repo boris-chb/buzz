@@ -12,12 +12,13 @@ import type { RouterOutputs } from "~/utils/api";
 import PopupMenu from "./ui/PopupMenu";
 import { useState } from "react";
 import EditTweet from "./EditTweet";
+import Link from "next/link";
 
 dayjs.extend(relativeTime);
 type TweetWithAuthor = RouterOutputs["tweets"]["getAll"][number];
 
 const Tweet: React.FC<TweetWithAuthor> = ({
-  tweet: { body, createdAt, likes, retweets },
+  tweet: { id: tweetId, body, createdAt, likes, retweets },
   author,
 }) => {
   const [isEditing, setIsEditing] = useState(false);
@@ -39,12 +40,16 @@ const Tweet: React.FC<TweetWithAuthor> = ({
       />
       <div className="flex-grow">
         <div className="ml-auto flex items-center">
-          <span className="mr-2 font-bold">{formatAuthorName(author)}</span>
-          <span className="text-gray-500">
-            @<span>{author.username}</span>
-          </span>
+          <Link href={`/@${author.username!}`}>
+            <span className="mr-2 font-bold">{formatAuthorName(author)}</span>
+            <span className="text-gray-500">
+              @<span>{author.username}</span>
+            </span>
+          </Link>
           <span className="mx-2 text-gray-500">•</span>
-          <span className="text-gray-500">{dayjs(createdAt).fromNow()}</span>
+          <Link href={`/tweet/${tweetId}`}>
+            <span className="text-gray-500">{dayjs(createdAt).fromNow()}</span>
+          </Link>
           <span className="ml-auto">
             <PopupMenu onEdit={() => setIsEditing(true)} />
           </span>
@@ -57,7 +62,7 @@ const Tweet: React.FC<TweetWithAuthor> = ({
         ) : (
           <>
             <div className="whitespace-normal break-all text-xl">{body}</div>
-            <div className="mt-4 flex items-center justify-between gap-5">
+            <div className="mt-4 flex items-center justify-start gap-5">
               <button
                 title="Comment"
                 className="text-gray-500 hover:text-blue-500 focus:outline-none"

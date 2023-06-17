@@ -1,5 +1,4 @@
 import { clerkClient } from "@clerk/nextjs";
-import type { User } from "@clerk/nextjs/dist/types/server";
 import { TRPCError } from "@trpc/server";
 import { z } from "zod";
 import {
@@ -9,6 +8,7 @@ import {
 } from "~/server/api/trpc";
 import { Ratelimit } from "@upstash/ratelimit";
 import { Redis } from "@upstash/redis";
+import { filterUserForClient } from "~/server/helpers/filterUserForClient";
 
 const TWEET_LENGTH = 100;
 
@@ -24,16 +24,6 @@ const createTweetInputSchema = z.object({
 const editTweetInputSchema = createTweetInputSchema
   .pick({ body: true }) // Pick the 'body' field from createTweetInputSchema
   .merge(z.object({ id: z.string() })); // Add the 'id' field
-
-const filterUserForClient = (user: User) => {
-  return {
-    id: user.id,
-    username: user.username,
-    profileImageUrl: user.profileImageUrl,
-    firstName: user.firstName,
-    lastName: user.lastName,
-  };
-};
 
 // Create a new ratelimiter, that allows 10 requests per 10 seconds
 const ratelimit = new Ratelimit({
