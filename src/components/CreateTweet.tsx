@@ -48,7 +48,7 @@ const CreateTweet: React.FC = () => {
   };
 
   return (
-    <div className="flex min-w-[400px] rounded-lg bg-white p-4 shadow-md">
+    <div className="flex min-w-[400px] rounded-lg border bg-slate-50 p-4 shadow-md dark:border-slate-400 dark:bg-slate-950">
       <Image
         className="mr-4 h-12 w-12 rounded-full"
         src={
@@ -62,7 +62,7 @@ const CreateTweet: React.FC = () => {
       />
       <form className="mt-2 flex-grow" onSubmit={handleSubmitTweet}>
         <textarea
-          className="w-full resize-none bg-transparent text-slate-700 outline-none disabled:cursor-not-allowed"
+          className="w-full resize-none bg-transparent text-xl  text-slate-700 outline-none disabled:cursor-not-allowed dark:text-slate-200"
           rows={3}
           maxLength={255}
           value={tweetText}

@@ -29,11 +29,15 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
         <meta name="description" content="twitter clone" />
       </Head>
       <main className="flex min-h-screen flex-col items-center justify-start gap-3 bg-slate-50 dark:bg-slate-950">
-        <ThemeToggleSwitch
-          isDarkMode={isDarkMode}
-          toggleDarkMode={toggleDarkMode}
-        />
-        <div className="mx-auto flex h-screen w-full flex-col gap-5 border-x border-slate-400 p-4  md:max-w-2xl">
+        <div className="fixed right-4 top-4 z-10">
+          <div className="relative">
+            <ThemeToggleSwitch
+              isDarkMode={isDarkMode}
+              toggleDarkMode={toggleDarkMode}
+            />
+          </div>
+        </div>
+        <div className="flex min-h-screen w-full flex-col gap-5 border-x border-slate-300 p-4 dark:border-slate-500 md:max-w-2xl">
           {children}
         </div>
       </main>

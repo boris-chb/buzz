@@ -13,18 +13,20 @@ const ThemeToggleSwitch: React.FC<ThemeToggleSwitchProps> = ({
     <>
       <div
         onClick={toggleDarkMode}
-        className={`relative flex h-32 w-60 cursor-pointer items-center rounded-full bg-white p-0.5  shadow-lg `}
+        className={`relative flex h-10 w-16 cursor-pointer items-center rounded-full bg-slate-100 p-0.5 shadow-inner `}
       >
         <div
-          className={`absolute h-28 w-28 rounded-full bg-white shadow-md transition-transform duration-300 ease-in ${
-            isDarkMode ? "translate-x-2" : "translate-x-28"
+          className={`absolute h-8 w-8 rounded-full ${
+            isDarkMode ? "bg-white" : "bg-slate-700"
+          } shadow-md transition-transform duration-300 ease-in ${
+            isDarkMode ? "translate-x-0" : "translate-x-7"
           }`}
         >
           <div className="flex h-full w-full items-center justify-center">
             {isDarkMode ? (
-              <SunIcon className="spin-animation text-3xl text-amber-300" />
+              <SunIcon className="spin-animation text-amber-300" />
             ) : (
-              <MoonIcon className="spin-animation text-3xl text-slate-300" />
+              <MoonIcon className="spin-animation text-slate-100" />
             )}
           </div>
         </div>

@@ -10,7 +10,7 @@ const TweetLoadingSkeleton: React.FC<TweetLoadingSkeletonProps> = ({
       {Array.from({ length: count || 1 }).map((_, index) => (
         <div
           key={index}
-          className="mx-auto h-[130px] w-full rounded-md border border-blue-300 p-4 shadow"
+          className="mx-auto h-[130px] w-[670px] rounded-md border border-blue-300 p-4 shadow"
         >
           <div className="flex animate-pulse space-x-4">
             <div className="h-10 w-10 rounded-full bg-slate-200"></div>

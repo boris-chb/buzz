@@ -30,7 +30,7 @@ const Tweet: React.FC<TweetWithAuthor> = ({
   };
 
   return (
-    <div className="flex w-full rounded-lg border border-slate-200 p-4">
+    <div className="flex w-full rounded-lg border border-slate-300 p-4 transition duration-300 ease-in-out hover:border-slate-500 hover:shadow-lg dark:border-slate-400">
       <Image
         className="mr-4 h-12 w-12 rounded-full"
         src={author.profileImageUrl}
@@ -41,14 +41,18 @@ const Tweet: React.FC<TweetWithAuthor> = ({
       <div className="flex-grow">
         <div className="ml-auto flex items-center">
           <Link href={`/@${author.username!}`}>
-            <span className="mr-2 font-bold">{formatAuthorName(author)}</span>
-            <span className="text-gray-500">
+            <span className="mr-2 font-bold text-slate-800 dark:text-slate-200">
+              {formatAuthorName(author)}
+            </span>
+            <span className="text-slate-800 dark:text-slate-200">
               @<span>{author.username}</span>
             </span>
           </Link>
-          <span className="mx-2 text-gray-500">•</span>
+          <span className="mx-2 text-slate-800 dark:text-slate-200">•</span>
           <Link href={`/tweet/${tweetId}`}>
-            <span className="text-gray-500">{dayjs(createdAt).fromNow()}</span>
+            <span className="text-slate-800 dark:text-slate-200">
+              {dayjs(createdAt).fromNow()}
+            </span>
           </Link>
           <span className="ml-auto">
             <PopupMenu onEdit={() => setIsEditing(true)} />
@@ -61,7 +65,9 @@ const Tweet: React.FC<TweetWithAuthor> = ({
           />
         ) : (
           <>
-            <div className="whitespace-normal break-all text-xl">{body}</div>
+            <div className="whitespace-normal break-all text-xl text-slate-800 dark:text-slate-200">
+              {body}
+            </div>
             <div className="mt-4 flex items-center justify-start gap-5">
               <button
                 title="Comment"
